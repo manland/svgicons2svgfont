@@ -517,7 +517,7 @@ function SVGIcons2SVGFontStream(options) {
                     return '&#x' + point.toString(16).toUpperCase() + ';';
                   })
                   .join('')
-              : ligature) +
+              : unicode) +
             '"\n\
       horiz-adv-x="' +
             glyph.width +
