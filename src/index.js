@@ -33,8 +33,8 @@ function matrixFromTransformAttribute(transformAttributeString) {
           .translate(-x, -y);
       }
     },
-    skewX: (result, a) => result.skewX(a * Math.PI / 180),
-    skewY: (result, a) => result.skewY(a * Math.PI / 180),
+    skewX: (result, a) => result.skewX((a * Math.PI) / 180),
+    skewY: (result, a) => result.skewY((a * Math.PI) / 180),
   };
 
   const result = new Matrix();
@@ -206,9 +206,7 @@ class SVGIcons2SVGFontStream extends Transform {
       this.emit(
         'error',
         new Error(
-          `The glyph "${
-            glyph.name
-          }" codepoint seems to be used already elsewhere.`
+          `The glyph "${glyph.name}" codepoint seems to be used already elsewhere.`
         )
       );
     }
@@ -261,9 +259,7 @@ class SVGIcons2SVGFontStream extends Transform {
               glyph.width = parseFloat(tag.attributes.width);
             } else {
               this.log(
-                `Glyph "${
-                  glyph.name
-                }" has no width attribute, defaulting to 150.`
+                `Glyph "${glyph.name}" has no width attribute, defaulting to 150.`
               );
               glyph.width = 150;
             }
@@ -271,9 +267,7 @@ class SVGIcons2SVGFontStream extends Transform {
               glyph.height = parseFloat(tag.attributes.height);
             } else {
               this.log(
-                `Glyph "${
-                  glyph.name
-                }" has no height attribute, defaulting to 150.`
+                `Glyph "${glyph.name}" has no height attribute, defaulting to 150.`
               );
               glyph.height = 150;
             }
@@ -281,9 +275,7 @@ class SVGIcons2SVGFontStream extends Transform {
         } else if ('clipPath' === tag.name) {
           // Clipping path unsupported
           this.log(
-            `Found a clipPath element in the icon "${
-              glyph.name
-            }" the result may be different than expected.`
+            `Found a clipPath element in the icon "${glyph.name}" the result may be different than expected.`
           );
         } else if ('rect' === tag.name && 'none' !== tag.attributes.fill) {
           glyph.paths.push(
@@ -291,18 +283,14 @@ class SVGIcons2SVGFontStream extends Transform {
           );
         } else if ('line' === tag.name && 'none' !== tag.attributes.fill) {
           this.log(
-            `Found a line element in the icon "${
-              glyph.name
-            }" the result could be different than expected.`
+            `Found a line element in the icon "${glyph.name}" the result could be different than expected.`
           );
           glyph.paths.push(
             applyTransform(svgShapesToPath.lineToPath(tag.attributes))
           );
         } else if ('polyline' === tag.name && 'none' !== tag.attributes.fill) {
           this.log(
-            `Found a polyline element in the icon "${
-              glyph.name
-            }" the result could be different than expected.`
+            `Found a polyline element in the icon "${glyph.name}" the result could be different than expected.`
           );
           glyph.paths.push(
             applyTransform(svgShapesToPath.polylineToPath(tag.attributes))
@@ -374,7 +362,7 @@ class SVGIcons2SVGFontStream extends Transform {
     if (this._options.normalize) {
       fontWidth = this.glyphs.reduce(
         (curMax, glyph) =>
-          Math.max(curMax, fontHeight / glyph.height * glyph.width),
+          Math.max(curMax, (fontHeight / glyph.height) * glyph.width),
         0
       );
     } else if (this._options.fontHeight) {
@@ -485,10 +473,13 @@ class SVGIcons2SVGFontStream extends Transform {
       }
       delete glyph.paths;
       glyph.unicode.forEach((unicode, i) => {
-        const unicodeStr = ucs2
-          .decode(unicode)
-          .map(point => '&#x' + point.toString(16).toUpperCase() + ';')
-          .join('');
+        const unicodeStr =
+          i === 0
+            ? ucs2
+                .decode(unicode)
+                .map(point => '&#x' + point.toString(16).toUpperCase() + ';')
+                .join('')
+            : unicode;
         const d = glyphPath.round(this._options.round).encode();
 
         this.push(
